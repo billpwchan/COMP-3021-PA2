@@ -53,7 +53,6 @@ public class MainMenuPane extends BorderPane {
      * Apply CSS styling to components.
      */
     private void styleComponents() {
-        this.setCenter(this.container);
         this.title.setStyle("-fx-font-size: 50;");
         this.container.getStyleClass().add("big-vbox");
         this.container.getChildren().stream().filter(Button.class::isInstance).forEach(node -> node.getStyleClass().add("big-button"));

@@ -26,14 +26,29 @@ public class SettingsPane extends BorderPane {
      * Use {@link Config#getAboutText()} for the infoText
      */
     public SettingsPane() {
-        //TODO
+        this.leftContainer = new VBox(20.0);
+        this.returnButton = new Button("Return");
+        this.toggleSoundFXButton = new Button(AudioManager.getInstance().isEnabled() ? "Enabled " : "Disabled " + "\u0001Sound FX");
+        this.centerContainer = new VBox(20.0);
+        this.infoText = new TextArea(Config.getAboutText());
+        this.connectComponents();
+        this.styleComponents();
+        this.setCallbacks();
     }
 
     /**
      * Connects the components together (think adding them into another, setting their positions, etc).
      */
     private void connectComponents() {
-        //TODO
+        this.leftContainer.getChildren().addAll(
+                this.returnButton,
+                this.toggleSoundFXButton
+        );
+        this.centerContainer.getChildren().addAll(
+                this.infoText
+        );
+        this.setLeft(this.leftContainer);
+        this.setCenter(this.centerContainer);
     }
 
     /**
@@ -42,7 +57,13 @@ public class SettingsPane extends BorderPane {
      * Also set the text area to not be editable, but allow text wrapping.
      */
     private void styleComponents() {
-        //TODO
+        this.leftContainer.getStyleClass().add("big-vbox");
+        this.leftContainer.getChildren().stream().filter(Button.class::isInstance).forEach(node -> node.getStyleClass().add("big-button"));
+        this.leftContainer.getStyleClass().add("side-menu");
+        this.infoText.setEditable(false);
+        this.infoText.setWrapText(true);
+        this.setPrefHeight(600.0);
+        this.centerContainer.getStyleClass().add("big-vbox");
     }
 
     /**
@@ -50,6 +71,10 @@ public class SettingsPane extends BorderPane {
      * The return button should go to the main menu scene
      */
     private void setCallbacks() {
-        //TODO
+        this.returnButton.setOnAction(actionEvent -> SceneManager.getInstance().showMainMenuScene());
+        this.toggleSoundFXButton.setOnAction(actionEvent -> {
+            AudioManager.getInstance().setEnabled(!AudioManager.getInstance().isEnabled());
+            this.toggleSoundFXButton.setText(AudioManager.getInstance().isEnabled() ? "Enabled " : "Disabled " + "\u0001Sound FX");
+        });
     }
 }
