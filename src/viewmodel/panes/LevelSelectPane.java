@@ -1,6 +1,7 @@
 package viewmodel.panes;
 
 import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
@@ -14,6 +15,8 @@ import viewmodel.MapRenderer;
 import viewmodel.SceneManager;
 
 import java.io.File;
+
+import static java.lang.System.getProperty;
 
 /**
  * Represents the main menu in the game
@@ -32,7 +35,16 @@ public class LevelSelectPane extends BorderPane {
      * Use 20 for VBox spacing
      */
     public LevelSelectPane() {
-        //TODO
+        this.leftContainer = new VBox(20.0);
+        this.returnButton = new Button("Return");
+        this.playButton = new Button("Play");
+        this.chooseMapDirButton = new Button("Choose map directory");
+        this.levelsListView = new ListView<>();
+        this.centerContainer = new VBox(20.0);
+        this.levelPreview = new Canvas();
+        this.connectComponents();
+        this.styleComponents();
+        this.setCallbacks();
     }
 
     /**
@@ -41,13 +53,28 @@ public class LevelSelectPane extends BorderPane {
      */
     private void connectComponents() {
         //TODO
+
+        this.leftContainer.getChildren().addAll(
+                this.returnButton,
+                this.chooseMapDirButton,
+                this.returnButton
+        );
+        this.centerContainer.getChildren().add(this.levelPreview);
+
     }
 
     /**
      * Apply CSS styling to components. Also sets the {@link LevelSelectPane#playButton} to be disabled.
      */
     private void styleComponents() {
-        //TODO
+        this.setLeft(this.leftContainer);
+        this.setCenter(this.centerContainer);
+        this.leftContainer.getChildren().stream().filter(Button.class::isInstance).forEach(node -> node.getStyleClass().add("big-button"));
+        this.leftContainer.getStyleClass().addAll("side-menu", "big-vbox");
+        this.centerContainer.getStyleClass().add("big-vbox");
+        this.levelsListView.setPrefSize(150.0, 300.0);
+        this.centerContainer.setAlignment(Pos.CENTER);
+        this.playButton.setDisable(true);
     }
 
     /**
@@ -62,7 +89,24 @@ public class LevelSelectPane extends BorderPane {
      * preview (see {@link MapRenderer#render(Canvas, Cell[][])}}, and set the play button to enabled.
      */
     private void setCallbacks() {
-        //TODO
+        this.returnButton.setOnAction(actionEvent -> SceneManager.getInstance().showMainMenuScene());
+        this.chooseMapDirButton.setOnAction(actionEvent -> {
+            DirectoryChooser dir = new DirectoryChooser();
+            dir.setTitle("Load map directory");
+            dir.setInitialDirectory(new File(getProperty("user.dir")));
+
+        });
+        this.levelsListView.getSelectionModel().selectedItemProperty().addListener((obj, str1, str2) -> {
+            try {
+                if (str == null) {
+                    this.playButton.setDisable(true);
+                }
+
+            } catch (InvalidMapException ex) {
+                ex.printStackTrace();
+                return;
+            }
+        });
     }
 
     /**
