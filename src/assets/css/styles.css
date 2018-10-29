@@ -1,0 +1,64 @@
+.root {
+    -fx-font-family: "Courier New";
+}
+
+Label {
+    -fx-font-size: 20;
+}
+
+Button {
+    -fx-font-size: 15;
+    -fx-font-family: "Arial";
+}
+
+VBox, HBox {
+
+}
+
+.big-vbox {
+    -fx-background-color: #ddd;
+    -fx-alignment: center;
+    -fx-spacing: 20;
+}
+
+.big-hbox {
+    -fx-background-color: #ddd;
+    -fx-alignment: center;
+    -fx-spacing: 20;
+}
+
+.side-menu {
+    -fx-padding: 20 20 20 20;
+    -fx-alignment: top-center;
+    -fx-background-color: #ccc;
+}
+
+.bottom-menu {
+    -fx-padding: 20 20 20 20;
+    -fx-background-color: #ccc;
+}
+
+.big-button {
+    -fx-font-size: 15;
+    -fx-font-family: "Arial";
+    -fx-pref-width: 200;
+    -fx-pref-height: 40;
+    -fx-background-radius: 16px;
+}
+
+.big-button:hover {
+    -fx-background-color: rgb(120, 120, 120);
+    -fx-text-fill: white;
+}
+
+.list-cell {
+    -fx-font-size: 15;
+}
+
+.text-field {
+    -fx-font-size: 15;
+}
+
+.text-area {
+    -fx-font-size: 18;
+}
