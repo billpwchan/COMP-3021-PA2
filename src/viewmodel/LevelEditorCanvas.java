@@ -1,5 +1,6 @@
 package viewmodel;
 
+import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Alert;
 import javafx.stage.FileChooser;
@@ -8,8 +9,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.Arrays;
-
-import static viewmodel.Config.LEVEL_EDITOR_TILE_SIZE;
 
 /**
  * Extends the Canvas class to provide functionality for generating maps and saving them.
@@ -32,7 +31,8 @@ public class LevelEditorCanvas extends Canvas {
      * @param cols The number of tiles in the map
      */
     public LevelEditorCanvas(int rows, int cols) {
-        //TODO
+        super(160.0, 160.0);
+        this.changeSize(rows, cols);
     }
 
     /**
@@ -55,14 +55,22 @@ public class LevelEditorCanvas extends Canvas {
      * @param cols The numbers of cols in the map
      */
     private void resetMap(int rows, int cols) {
-        //TODO
+        this.map = new Brush[rows][cols];
+        for (var i = 0; i < rows; i++) {
+            for (var j = 0; j < cols; j++) {
+                this.map[i][j] = Brush.TILE;
+            }
+        }
+        this.oldPlayerRow = -1;
+        this.oldPlayerCol = -1;
+        this.renderCanvas();
     }
 
     /**
      * Render the map using {@link MapRenderer}
      */
     private void renderCanvas() {
-        //TODO
+        MapRenderer.render(this, this.map);
     }
 
     /**
@@ -93,7 +101,21 @@ public class LevelEditorCanvas extends Canvas {
      * the selected location.
      */
     public void saveToFile() {
-        //TODO
+        File file = this.getTargetSaveDirectory();
+        if (file != null) {
+            try (var printWriter = new PrintWriter(file)){
+                printWriter.print(this.rows);
+                printWriter.print(this.cols);
+                for (var i = 0; i < this.rows; i++){
+                    for (var j =0; j< this.cols; j++) {
+                        printWriter.print(this.map[i][j].getRep());
+                    }
+                    printWriter.println();
+                }
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     /**
@@ -104,8 +126,14 @@ public class LevelEditorCanvas extends Canvas {
      * @return The directory the user chose to save the map in.
      */
     private File getTargetSaveDirectory() {
-        //TODO
-        return null;//NOTE: You may also need to modify this line
+        var dialog = new FileChooser();
+        dialog.setTitle("Save Map");
+        dialog.getExtensionFilters().add(new FileChooser.ExtensionFilter("Normal text file", ".txt"));
+        var file = dialog.showSaveDialog(SceneManager.getInstance().getStage());
+        if (file != null){
+            return new File(file.getAbsolutePath());
+        }
+        return null;
     }
 
     /**
@@ -121,8 +149,33 @@ public class LevelEditorCanvas extends Canvas {
      * @return If the map is invalid
      */
     private boolean isInvalidMap() {
-        //TODO
-        return true;//NOTE: You may also need to modify this line
+        String alertContent = null;
+        if (this.rows < 3 || this.cols < 3) {
+            alertContent = "Minimum size is 3 rows and 3 cols.";
+        }
+        if (this.oldPlayerRow == -1 || this.oldPlayerCol == -1
+                || !this.map[this.oldPlayerRow][this.oldPlayerCol].toString().contains("Player")) {
+            alertContent = "Please add a player.";
+        }
+        if (Arrays.stream(this.map).flatMap(Arrays::stream).mapToInt(e -> {
+            if (e == Brush.CRATE_ON_TILE || e == Brush.CRATE_ON_DEST) return 1;
+            if (e == Brush.DEST) return -1;
+            return 0;
+        }).sum() != 0) {
+            alertContent = "Imbalanced number of crates and destinations.";
+        }
+        if (Arrays.stream(this.map).flatMap(Arrays::stream).filter(e -> e.toString().contains("Crate")).count() < 1L) {
+            alertContent = "Please create at least 1 crate and destination";
+        }
+        if (alertContent != null) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Error");
+            alert.setHeaderText("Could not save map!");
+            alert.setContentText(alertContent);
+            alert.showAndWait();
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -163,7 +216,5 @@ public class LevelEditorCanvas extends Canvas {
             return rep;
         }
     }
-
-
 }
 
