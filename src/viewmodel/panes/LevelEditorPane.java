@@ -20,19 +20,19 @@ import static viewmodel.LevelEditorCanvas.Brush;
  */
 public class LevelEditorPane extends BorderPane {
     private final LevelEditorCanvas levelEditor = new LevelEditorCanvas(5, 5);
-    private VBox leftContainer = new VBox(20.0);
-    private Button returnButton = new Button("Return");
-    private Label rowText = new Label("Rows");
-    private NumberTextField rowField = new NumberTextField("5");
-    private Label colText = new Label("Columns");
-    private NumberTextField colField = new NumberTextField("5");
-    private BorderPane rowBox = new BorderPane(); //holds the rowText and rowField side by side
-    private BorderPane colBox = new BorderPane(); //holds the colText and colField side by side
-    private Button newGridButton = new Button("New Grid");
-    private ObservableList<Brush> brushList = FXCollections.observableArrayList(Brush.values());
-    private ListView<Brush> selectedBrush = new ListView<>();
-    private Button saveButton = new Button("Save");
-    private VBox centerContainer = new VBox(20.0);
+    private VBox leftContainer;
+    private Button returnButton;
+    private Label rowText;
+    private NumberTextField rowField;
+    private Label colText;
+    private NumberTextField colField;
+    private BorderPane rowBox; //holds the rowText and rowField side by side
+    private BorderPane colBox; //holds the colText and colField side by side
+    private Button newGridButton;
+    private ObservableList<Brush> brushList;
+    private ListView<Brush> selectedBrush;
+    private Button saveButton;
+    private VBox centerContainer;
 
     /**
      * Instantiate the member components and connect and style them. Also set the callbacks.
