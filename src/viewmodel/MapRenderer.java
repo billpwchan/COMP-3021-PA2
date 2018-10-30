@@ -1,16 +1,10 @@
 package viewmodel;
 
 import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import model.Map.Cell;
-import model.Map.Occupant.Player;
-import model.Map.Occupiable.DestTile;
-import model.Map.Occupiable.Occupiable;
 
 import java.net.URISyntaxException;
-
-import static viewmodel.Config.LEVEL_EDITOR_TILE_SIZE;
 
 /**
  * Renders maps onto canvases
@@ -49,8 +43,49 @@ public class MapRenderer {
      * @param map    The map holding the current state of the game
      */
     static void render(Canvas canvas, LevelEditorCanvas.Brush[][] map) {
-        //TODO
+        int rowNum = map.length;
+        int colNum = map.length > 0 ? map[0].length : 0;
+        canvas.setHeight((double) (rowNum << 5));
+        canvas.setWidth((double) (colNum << 5));
+        var graphicsContext = canvas.getGraphicsContext2D();
+        for (var i = 0; i < rowNum; i++) {
+            for (var j = 0; j < colNum; j++) {
+                Image image = null;
+                switch (map[i][j].getRep()) {
+                    case '.': {
+                        image = tile;
+                        break;
+                    }
+                    case '@': {
+                        image = playerOnTile;
+                        break;
+                    }
+                    case '&': {
+                        image = playerOnDest;
+                        break;
+                    }
+                    case 'c': {
+                        image = crateOnTile;
+                        break;
+                    }
+                    case '$': {
+                        image = crateOnDest;
+                        break;
+                    }
+                    case '#': {
+                        image = wall;
+                        break;
+                    }
+                    case 'C': {
+                        image = dest;
+                        break;
+                    }
+                }
+                graphicsContext.drawImage(image, (double)(j << 5), (double)(i << 5));
+            }
+        }
     }
+
 
     /**
      * Render the map onto the canvas. This method can be used in GamePlayPane and LevelSelectPane

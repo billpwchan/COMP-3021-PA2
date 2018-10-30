@@ -51,15 +51,13 @@ public class LevelSelectPane extends BorderPane {
      * the other classes in the {@link javafx.scene.layout.Pane} package.
      */
     private void connectComponents() {
-        //TODO
-
         this.leftContainer.getChildren().addAll(
                 this.returnButton,
                 this.chooseMapDirButton,
-                this.returnButton
+                this.levelsListView,
+                this.playButton
         );
         this.centerContainer.getChildren().add(this.levelPreview);
-
     }
 
     /**

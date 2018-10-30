@@ -45,7 +45,11 @@ public class AudioManager {
      * @param name the name of the sound file to be played, excluding .mp3
      */
     private void playFile(String name) {
-        //TODO
+        if (!enabled) return;
+        var media = new MediaPlayer(new Media(this.getClass().getResource("/assets/audio/" + name + ".mp3").toExternalForm()));
+        this.soundPool.add(media);
+        media.play();
+        media.setOnEndOfMedia(() -> this.playFile(name));
     }
 
     public void playMoveSound() {
