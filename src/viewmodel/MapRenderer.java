@@ -3,6 +3,9 @@ package viewmodel;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.image.Image;
 import model.Map.Cell;
+import model.Map.Occupant.Crate;
+import model.Map.Occupiable.DestTile;
+import model.Map.Occupiable.Occupiable;
 
 import java.net.URISyntaxException;
 
@@ -96,6 +99,33 @@ public class MapRenderer {
      * @param map    The map holding the current state of the game
      */
     public static void render(Canvas canvas, Cell[][] map) {
-        //TODO
+        int rowNum = map.length;
+        int colNum = map.length > 0 ? map[0].length : 0;
+        canvas.setHeight((double) (rowNum << 5));
+        canvas.setWidth((double) (colNum << 5));
+        var graphicsContext = canvas.getGraphicsContext2D();
+        for (var i = 0; i < rowNum; i++) {
+            for (var j = 0; j < colNum; j++) {
+                Image image = null;
+                if (!(map[i][j] instanceof Occupiable)) {
+                    image = wall;
+                } else {
+                    if (!((Occupiable) map[i][j]).getOccupant().isPresent()) {
+                        if (map[i][j] instanceof DestTile) {
+                            image = dest;
+                        } else {
+                            image = tile;
+                        }
+                    } else {
+                        if (((Occupiable) map[i][j]).getOccupant().get() instanceof Crate) {
+                            image = map[i][j] instanceof DestTile ? crateOnDest : crateOnTile;
+                        } else {
+                            image = map[i][j] instanceof DestTile ? playerOnDest : playerOnTile;
+                        }
+                    }
+                }
+                graphicsContext.drawImage(image, (double) (rowNum << 5), (double) (colNum << 5));
+            }
+        }
     }
 }

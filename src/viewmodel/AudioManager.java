@@ -49,7 +49,12 @@ public class AudioManager {
         var media = new MediaPlayer(new Media(this.getClass().getResource("/assets/audio/" + name + ".mp3").toExternalForm()));
         this.soundPool.add(media);
         media.play();
-        media.setOnEndOfMedia(() -> this.playFile(name));
+        media.setOnEndOfMedia(() -> {
+            this.soundPool.remove(name);
+            var thread = new Thread(media::dispose);
+            thread.setDaemon(true);
+            thread.start();
+        });
     }
 
     public void playMoveSound() {
