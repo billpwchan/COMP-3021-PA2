@@ -1,7 +1,6 @@
 package viewmodel.panes;
 
 import javafx.geometry.Pos;
-import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
@@ -90,21 +89,27 @@ public class LevelSelectPane extends BorderPane {
      */
     private void setCallbacks() {
         this.returnButton.setOnAction(actionEvent -> SceneManager.getInstance().showMainMenuScene());
-        this.chooseMapDirButton.setOnAction(actionEvent -> {
-            DirectoryChooser dir = new DirectoryChooser();
-            dir.setTitle("Load map directory");
-            dir.setInitialDirectory(new File(getProperty("user.dir")));
-
-        });
-        this.levelsListView.getSelectionModel().selectedItemProperty().addListener((obj, str1, str2) -> {
+        this.chooseMapDirButton.setOnAction(actionEvent -> this.promptUserForMapDirectory());
+        this.levelsListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             try {
-                if (str == null) {
+                if (newValue == null) {
                     this.playButton.setDisable(true);
+                    return;
                 }
-
+                LevelManager.getInstance().setLevel(newValue);
+                MapRenderer.render(this.levelPreview, LevelManager.getInstance().getGameLevel().getMap().getCells());
+                this.playButton.setDisable(false);
             } catch (InvalidMapException ex) {
                 ex.printStackTrace();
-                return;
+            }
+        });
+        this.playButton.setOnAction(object -> {
+            try {
+                LevelManager.getInstance().setLevel(this.levelsListView.getSelectionModel().getSelectedItem());
+                SceneManager.getInstance().showGamePlayScene();
+                LevelManager.getInstance().startLevelTimer();
+            } catch (InvalidMapException e) {
+                e.printStackTrace();
             }
         });
     }
@@ -115,6 +120,13 @@ public class LevelSelectPane extends BorderPane {
      * load the levels from disk using LevelManager (if the user didn't cancel out the window)
      */
     private void promptUserForMapDirectory() {
-        //TODO
+        DirectoryChooser dir = new DirectoryChooser();
+        dir.setTitle("Load map directory");
+        dir.setInitialDirectory(new File(getProperty("user.dir")));
+        var mapDir = dir.showDialog(SceneManager.getInstance().getStage());
+        if (mapDir != null) {
+            LevelManager.getInstance().setMapDirectory(mapDir.getAbsolutePath());
+            LevelManager.getInstance().loadLevelNamesFromDisk();
+        }
     }
 }
