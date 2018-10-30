@@ -1,6 +1,5 @@
 package viewmodel;
 
-import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Alert;
 import javafx.stage.FileChooser;
@@ -93,7 +92,23 @@ public class LevelEditorCanvas extends Canvas {
      * @param y     Mouse click coordinate y
      */
     public void setTile(Brush brush, double x, double y) {
-        //TODO
+        int newx = (int) (x / Config.LEVEL_EDITOR_TILE_SIZE);
+        int newy = (int) (y / Config.LEVEL_EDITOR_TILE_SIZE);
+        if (brush.toString().contains("Player")) {
+            if (this.oldPlayerRow != -1 && this.oldPlayerCol != -1) {
+                var oldPlayer = this.map[this.oldPlayerRow][this.oldPlayerCol];
+                if (oldPlayer == Brush.PLAYER_ON_TILE) {
+                    System.out.println("Changing back to Tile");
+                    this.map[this.oldPlayerRow][this.oldPlayerCol] = Brush.TILE;
+                } else if (oldPlayer == Brush.PLAYER_ON_DEST) {
+                    this.map[this.oldPlayerRow][this.oldPlayerCol] = Brush.DEST;
+                }
+            }
+            this.oldPlayerRow = newy;
+            this.oldPlayerCol = newx;
+        }
+        this.map[newy][newx] = brush;
+        this.renderCanvas();
     }
 
     /**
@@ -104,8 +119,8 @@ public class LevelEditorCanvas extends Canvas {
         File file = this.getTargetSaveDirectory();
         if (file != null) {
             try (var printWriter = new PrintWriter(file)){
-                printWriter.print(this.rows);
-                printWriter.print(this.cols);
+                printWriter.println(this.rows);
+                printWriter.println(this.cols);
                 for (var i = 0; i < this.rows; i++){
                     for (var j =0; j< this.cols; j++) {
                         printWriter.print(this.map[i][j].getRep());

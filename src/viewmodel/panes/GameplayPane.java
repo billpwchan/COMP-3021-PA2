@@ -200,7 +200,6 @@ public class GameplayPane extends BorderPane {
      * increment the number of restarts
      */
     private void doRestartAction() {
-        //TODO
         LevelManager.getInstance().resetLevelTimer();
         LevelManager.getInstance().startLevelTimer();
         LevelManager.getInstance().incrementNumRestarts();

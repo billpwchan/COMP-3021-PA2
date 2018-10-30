@@ -62,7 +62,7 @@ public class MainMenuPane extends BorderPane {
      * Set the event handlers for the 4 buttons, 3 of which switch to different scene, and 1 of which exits the program.
      */
     private void setCallbacks() {
-        this.playButton.setOnAction(actionEvent -> SceneManager.getInstance().showGamePlayScene());
+        this.playButton.setOnAction(actionEvent -> SceneManager.getInstance().showLevelSelectMenuScene());
         this.levelEditorButton.setOnAction(actionEvent -> SceneManager.getInstance().showLevelEditorScene());
         this.settingsButton.setOnAction(actionEvent -> SceneManager.getInstance().showSettingsMenuScene());
         this.quitButton.setOnAction(actionEvent -> Platform.exit());

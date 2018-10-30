@@ -83,7 +83,7 @@ public class LevelManager {
         this.curLevelNameProperty.setValue(levelName);
         this.curGameLevelExistedDuration.set(0);
         this.gameLevel.numPushesProperty().setValue(0);
-        this.gameLevel.loadMap(levelName);
+        this.gameLevel.loadMap(this.mapDirectory +"\\"+ levelName);
     }
 
     /**

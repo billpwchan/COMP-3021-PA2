@@ -94,7 +94,7 @@ public class LevelSelectPane extends BorderPane {
                     this.playButton.setDisable(true);
                     return;
                 }
-                LevelManager.getInstance().setLevel(newValue);
+                LevelManager.getInstance().setLevel(newValue.trim());
                 MapRenderer.render(this.levelPreview, LevelManager.getInstance().getGameLevel().getMap().getCells());
                 this.playButton.setDisable(false);
             } catch (InvalidMapException ex) {
@@ -126,5 +126,6 @@ public class LevelSelectPane extends BorderPane {
             LevelManager.getInstance().setMapDirectory(mapDir.getAbsolutePath());
             LevelManager.getInstance().loadLevelNamesFromDisk();
         }
+        this.levelsListView.setItems(LevelManager.getInstance().getLevelNames());
     }
 }
