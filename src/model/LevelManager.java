@@ -7,15 +7,11 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import model.Exceptions.InvalidMapException;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.stream.Stream;
 
 /**
  * Keeps track of the current GameLevel and level name. Also tracks information
@@ -86,7 +82,13 @@ public class LevelManager {
      * {@link javafx.application.Platform#runLater(Runnable)} are required
      */
     public void startLevelTimer() {
-        //TODO
+        this.curGameLevelExistedDuration.set(0);
+        this.t.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                Platform.runLater(() -> LevelManager.getInstance().curGameLevelExistedDuration.setValue(LevelManager.getInstance().curGameLevelExistedDuration.get() + 1));
+            }
+        }, 0L, 1000L);
     }
 
     /**
@@ -117,8 +119,13 @@ public class LevelManager {
      * name is always valid.
      */
     public String getNextLevelName() {
-        //TODO
-        return null;//NOTE: You may also change this line
+        boolean flag = false;
+        for (String levelName : this.levelNames) {
+            if (flag) return levelName;
+            if (!levelName.equals(this.curLevelNameProperty.toString())) continue;
+            flag = true;
+        }
+        return null;
     }
 
     public IntegerProperty curGameLevelExistedDurationProperty() {

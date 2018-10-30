@@ -9,14 +9,11 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import model.Exceptions.InvalidMapException;
 import model.LevelManager;
 import viewmodel.AudioManager;
 import viewmodel.MapRenderer;
 import viewmodel.SceneManager;
 import viewmodel.customNodes.GameplayInfoPane;
-
-import java.util.Optional;
 
 /**
  * Represents the gameplay pane in the game
@@ -35,27 +32,46 @@ public class GameplayPane extends BorderPane {
      * Use 20 for the VBox spacing
      */
     public GameplayPane() {
-        //TODO
+        this.info = new GameplayInfoPane(
+                LevelManager.getInstance().currentLevelNameProperty(),
+                LevelManager.getInstance().curGameLevelExistedDurationProperty(),
+                LevelManager.getInstance().getGameLevel().numPushesProperty(),
+                LevelManager.getInstance().curGameLevelNumRestartsProperty()
+        );
+        this.canvasContainer = new VBox();
+        this.gamePlayCanvas = new Canvas();
+        this.buttonBar = new HBox(20.0);
+        this.restartButton = new Button("Restart");
+        this.quitToMenuButton = new Button("Quit to menu");
+        this.connectComponents();
+        this.styleComponents();
+        this.setCallbacks();
     }
 
     /**
      * Connects the components together (think adding them into another, setting their positions, etc).
      */
     private void connectComponents() {
-        //TODO
+        this.canvasContainer.getChildren().add(this.gamePlayCanvas);
+        this.buttonBar.getChildren().addAll(this.canvasContainer, this.restartButton, this.quitToMenuButton);
+        this.setCenter(this.canvasContainer);
+        this.setBottom(this.buttonBar);
+        this.canvasContainer.setAlignment(Pos.CENTER);
     }
 
     /**
      * Apply CSS styling to components.
      */
     private void styleComponents() {
-        //TODO
+        this.buttonBar.getStyleClass().add("big-hbox");
+        this.buttonBar.getChildren().stream().filter(Button.class::isInstance).forEach(node -> node.getStyleClass().add("big-button"));
+        this.canvasContainer.getStyleClass().add("bottom-menu");
     }
 
     /**
      * Set the event handlers for the 2 buttons.
      * <p>
-     * Also listens for key presses (w, a, s, d), which move the character.
+     * Also listens for key presses (w, a, s, d), whichmove the character.
      * <p>
      * Hint: {@link GameplayPane#setOnKeyPressed(EventHandler)}  is needed.
      * You will need to make the move, rerender the canvas, play the sound (if the move was made), and detect
@@ -64,7 +80,37 @@ public class GameplayPane extends BorderPane {
      * and generating the popups.
      */
     private void setCallbacks() {
-        //TODO
+        this.restartButton.setOnAction(actionEvent -> this.doRestartAction());
+        this.quitToMenuButton.setOnAction(object -> this.doQuitToMenuAction());
+        this.setOnKeyPressed(keyInput -> {
+            switch (keyInput.getCode()) {
+                case W: {
+                    LevelManager.getInstance().getGameLevel().makeMove('w');
+                    break;
+                }
+                case A: {
+                    LevelManager.getInstance().getGameLevel().makeMove('A');
+                    break;
+                }
+                case S: {
+                    LevelManager.getInstance().getGameLevel().makeMove('S');
+                    break;
+                }
+                case D: {
+                    LevelManager.getInstance().getGameLevel().makeMove('D');
+                }
+            }
+            this.renderCanvas();
+            if (LevelManager.getInstance().getGameLevel().isDeadlocked()) {
+                AudioManager.getInstance().playDeadlockSound();
+                this.createDeadlockedPopup();
+            }
+            if (LevelManager.getInstance().getGameLevel().isWin()) {
+                AudioManager.getInstance().playWinSound();
+                this.createLevelClearPopup();
+            }
+            AudioManager.getInstance().playMoveSound();
+        });
     }
 
     /**
@@ -73,7 +119,16 @@ public class GameplayPane extends BorderPane {
      * main menu scene.
      */
     private void doQuitToMenuAction() {
-        //TODO
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirm");
+        alert.setHeaderText("Return to Menu?");
+        alert.setContentText("Game progress will be lost.");
+        var response = alert.showAndWait();
+        if (response.get() == ButtonType.OK) {
+            LevelManager.getInstance().resetLevelTimer();
+            LevelManager.getInstance().resetNumRestarts();
+            SceneManager.getInstance().showMainMenuScene();
+        }
     }
 
     /**
@@ -83,7 +138,23 @@ public class GameplayPane extends BorderPane {
      * the number of restarts.
      */
     private void createDeadlockedPopup() {
-        //TODO
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirm");
+        alert.setHeaderText("Level deadlocked!");
+        ButtonType returnBtn = new ButtonType("Return");
+        ButtonType restartBtn = new ButtonType("Restart");
+        alert.getButtonTypes().setAll(returnBtn, restartBtn);
+        var response = alert.showAndWait();
+        if (response.get() == returnBtn) {
+            SceneManager.getInstance().showMainMenuScene();
+            LevelManager.getInstance().resetNumRestarts();
+            return;
+        } else if (response.get() == restartBtn) {
+            this.doRestartAction();
+        } else {
+            return;
+        }
+        this.renderCanvas();
     }
 
     /**
@@ -98,6 +169,24 @@ public class GameplayPane extends BorderPane {
      */
     private void createLevelClearPopup() {
         //TODO
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirm");
+        alert.setHeaderText("Level cleared!");
+        ButtonType returnBtn = new ButtonType("Return");
+        ButtonType nextLevelBtn = new ButtonType("Next Level");
+        if (LevelManager.getInstance().getNextLevelName() != null){
+            alert.getButtonTypes().setAll(returnBtn, nextLevelBtn);
+        } else {
+            alert.getButtonTypes().setAll(returnBtn);
+        }
+        var response = alert.showAndWait();
+        if (response.get() == returnBtn) {
+            SceneManager.getInstance().showMainMenuScene();
+            LevelManager.getInstance().resetNumRestarts();
+            return;
+        } else if (response.get() == nextLevelBtn) {
+
+        }
     }
 
     /**
@@ -106,6 +195,10 @@ public class GameplayPane extends BorderPane {
      */
     private void doRestartAction() {
         //TODO
+        LevelManager.getInstance().resetLevelTimer();
+        LevelManager.getInstance().startLevelTimer();
+        LevelManager.getInstance().incrementNumRestarts();
+        this.renderCanvas();
     }
 
     /**
@@ -115,5 +208,6 @@ public class GameplayPane extends BorderPane {
      */
     private void renderCanvas() {
         //TODO
+        MapRenderer.render(this.gamePlayCanvas, LevelManager.getInstance().getGameLevel().getMap().getCells());
     }
 }
