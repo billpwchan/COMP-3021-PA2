@@ -10,6 +10,9 @@ import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import model.Exceptions.InvalidMapException;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -50,7 +53,12 @@ public class LevelManager {
      * Hints: Files.walk(Paths.get(mapDirectory), 1) returns a Stream of files 1 folder deep
      */
     public void loadLevelNamesFromDisk() {
-        //TODO
+        this.levelNames.clear();
+        try (var mapFiles = Files.walk(Paths.get(this.mapDirectory), 1)){
+            mapFiles.filter(path -> Files.isRegularFile(path)).sorted().forEach(path -> this.levelNames.add(path.getFileName().toString()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public ObservableList<String> getLevelNames() {
@@ -72,7 +80,10 @@ public class LevelManager {
      * @throws InvalidMapException if the map was invalid
      */
     public void setLevel(String levelName) throws InvalidMapException {
-        //TODO
+        this.curLevelNameProperty.setValue(levelName);
+        this.curGameLevelExistedDuration.set(0);
+        this.gameLevel.numPushesProperty().setValue(0);
+        this.gameLevel.loadMap(levelName);
     }
 
     /**

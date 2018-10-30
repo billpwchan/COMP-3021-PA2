@@ -9,6 +9,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import model.Exceptions.InvalidMapException;
 import model.LevelManager;
 import viewmodel.AudioManager;
 import viewmodel.MapRenderer;
@@ -100,6 +101,7 @@ public class GameplayPane extends BorderPane {
                     LevelManager.getInstance().getGameLevel().makeMove('D');
                 }
             }
+            AudioManager.getInstance().playMoveSound();
             this.renderCanvas();
             if (LevelManager.getInstance().getGameLevel().isDeadlocked()) {
                 AudioManager.getInstance().playDeadlockSound();
@@ -109,7 +111,6 @@ public class GameplayPane extends BorderPane {
                 AudioManager.getInstance().playWinSound();
                 this.createLevelClearPopup();
             }
-            AudioManager.getInstance().playMoveSound();
         });
     }
 
@@ -168,7 +169,6 @@ public class GameplayPane extends BorderPane {
      * be an option to go to the next level.
      */
     private void createLevelClearPopup() {
-        //TODO
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Confirm");
         alert.setHeaderText("Level cleared!");
@@ -183,9 +183,15 @@ public class GameplayPane extends BorderPane {
         if (response.get() == returnBtn) {
             SceneManager.getInstance().showMainMenuScene();
             LevelManager.getInstance().resetNumRestarts();
-            return;
         } else if (response.get() == nextLevelBtn) {
-
+            try {
+                LevelManager.getInstance().setLevel(LevelManager.getInstance().getNextLevelName());
+                this.renderCanvas();
+                LevelManager.getInstance().resetNumRestarts();
+                LevelManager.getInstance().resetLevelTimer();
+            } catch (InvalidMapException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -207,7 +213,6 @@ public class GameplayPane extends BorderPane {
      * Hint: {@link MapRenderer}
      */
     private void renderCanvas() {
-        //TODO
         MapRenderer.render(this.gamePlayCanvas, LevelManager.getInstance().getGameLevel().getMap().getCells());
     }
 }
