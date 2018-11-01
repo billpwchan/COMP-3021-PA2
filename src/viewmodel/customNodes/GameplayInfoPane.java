@@ -67,9 +67,9 @@ public class GameplayInfoPane extends VBox {
      *                            has restarted the current level
      */
     private void bindTo(StringProperty levelNameProperty, IntegerProperty timerProperty, IntegerProperty numMovesProperty, IntegerProperty numRestartsProperty) {
-        this.levelNameLabel.textProperty().bind(Bindings.createStringBinding(() -> "[Level: " + levelNameProperty.toString() + "]"));
-        this.timerLabel.textProperty().bind(Bindings.createStringBinding(() -> "[Time: " + format(timerProperty.get()) + "]"));
-        this.numMovesLabel.textProperty().bind(Bindings.createStringBinding(() -> "[Moves: " + numMovesProperty.toString() + "]"));
-        this.numRestartsLabel.textProperty().bind(Bindings.createStringBinding(() -> "[Restarts: " + numRestartsProperty.toString() + "]"));
+        this.levelNameLabel.textProperty().bind(Bindings.createStringBinding(() -> "[Level: " + levelNameProperty.getValue() + "]", levelNameProperty));
+        this.timerLabel.textProperty().bind(Bindings.createStringBinding(() -> "[Time: " + format(timerProperty.get()) + "]", timerProperty));
+        this.numMovesLabel.textProperty().bind(Bindings.createStringBinding(() -> "[Moves: " + numMovesProperty.get() + "]", numMovesProperty));
+        this.numRestartsLabel.textProperty().bind(Bindings.createStringBinding(() -> "[Restarts: " + numRestartsProperty.get() + "]", numRestartsProperty));
     }
 }

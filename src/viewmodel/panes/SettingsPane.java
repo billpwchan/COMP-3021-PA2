@@ -28,7 +28,7 @@ public class SettingsPane extends BorderPane {
     public SettingsPane() {
         this.leftContainer = new VBox(20.0);
         this.returnButton = new Button("Return");
-        this.toggleSoundFXButton = new Button(AudioManager.getInstance().isEnabled() ? "Enabled " : "Disabled " + "\u0001Sound FX");
+        this.toggleSoundFXButton = new Button(!AudioManager.getInstance().isEnabled() ? "Enabled " + "Sound FX": "Disabled " + "Sound FX");
         this.centerContainer = new VBox(20.0);
         this.infoText = new TextArea(Config.getAboutText());
         this.connectComponents();
@@ -74,7 +74,7 @@ public class SettingsPane extends BorderPane {
         this.returnButton.setOnAction(actionEvent -> SceneManager.getInstance().showMainMenuScene());
         this.toggleSoundFXButton.setOnAction(actionEvent -> {
             AudioManager.getInstance().setEnabled(!AudioManager.getInstance().isEnabled());
-            this.toggleSoundFXButton.setText(AudioManager.getInstance().isEnabled() ? "Enabled " : "Disabled " + "\u0001Sound FX");
+            this.toggleSoundFXButton.setText(!AudioManager.getInstance().isEnabled() ? "Enabled " + "Sound FX" : "Disabled " + "Sound FX");
         });
     }
 }

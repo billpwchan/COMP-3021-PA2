@@ -30,7 +30,7 @@ public class LevelEditorCanvas extends Canvas {
      * @param cols The number of tiles in the map
      */
     public LevelEditorCanvas(int rows, int cols) {
-        super(160.0, 160.0);
+        super(Config.LEVEL_EDITOR_TILE_SIZE * cols, Config.LEVEL_EDITOR_TILE_SIZE * rows);
         this.changeSize(rows, cols);
     }
 
@@ -116,19 +116,21 @@ public class LevelEditorCanvas extends Canvas {
      * the selected location.
      */
     public void saveToFile() {
-        File file = this.getTargetSaveDirectory();
-        if (file != null) {
-            try (var printWriter = new PrintWriter(file)){
-                printWriter.println(this.rows);
-                printWriter.println(this.cols);
-                for (var i = 0; i < this.rows; i++){
-                    for (var j =0; j< this.cols; j++) {
-                        printWriter.print(this.map[i][j].getRep());
+        if (!isInvalidMap()) {
+            File file = this.getTargetSaveDirectory();
+            if (file != null) {
+                try (var printWriter = new PrintWriter(file)) {
+                    printWriter.println(this.rows);
+                    printWriter.println(this.cols);
+                    for (var i = 0; i < this.rows; i++) {
+                        for (var j = 0; j < this.cols; j++) {
+                            printWriter.print(this.map[i][j].getRep());
+                        }
+                        printWriter.println();
                     }
-                    printWriter.println();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
                 }
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
             }
         }
     }

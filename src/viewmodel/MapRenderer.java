@@ -101,8 +101,8 @@ public class MapRenderer {
     public static void render(Canvas canvas, Cell[][] map) {
         int rowNum = map.length;
         int colNum = map.length > 0 ? map[0].length : 0;
-        canvas.setHeight((double) (rowNum << 5));
-        canvas.setWidth((double) (colNum << 5));
+        canvas.setHeight((double) (rowNum * Config.LEVEL_EDITOR_TILE_SIZE));
+        canvas.setWidth((double) (colNum * Config.LEVEL_EDITOR_TILE_SIZE));
         var graphicsContext = canvas.getGraphicsContext2D();
         for (var i = 0; i < rowNum; i++) {
             for (var j = 0; j < colNum; j++) {
@@ -124,7 +124,7 @@ public class MapRenderer {
                         }
                     }
                 }
-                graphicsContext.drawImage(image, (double) (rowNum << 5), (double) (colNum << 5));
+                graphicsContext.drawImage(image, (double) (j << 5), (double) (i << 5), Config.LEVEL_EDITOR_TILE_SIZE, Config.LEVEL_EDITOR_TILE_SIZE);
             }
         }
     }

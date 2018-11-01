@@ -10,6 +10,7 @@ import javafx.stage.DirectoryChooser;
 import model.Exceptions.InvalidMapException;
 import model.LevelManager;
 import model.Map.Cell;
+import viewmodel.Config;
 import viewmodel.MapRenderer;
 import viewmodel.SceneManager;
 
@@ -58,18 +59,18 @@ public class LevelSelectPane extends BorderPane {
                 this.playButton
         );
         this.centerContainer.getChildren().add(this.levelPreview);
+        this.setLeft(this.leftContainer);
+        this.setCenter(this.centerContainer);
     }
 
     /**
      * Apply CSS styling to components. Also sets the {@link LevelSelectPane#playButton} to be disabled.
      */
     private void styleComponents() {
-        this.setLeft(this.leftContainer);
-        this.setCenter(this.centerContainer);
         this.leftContainer.getChildren().stream().filter(Button.class::isInstance).forEach(node -> node.getStyleClass().add("big-button"));
         this.leftContainer.getStyleClass().addAll("side-menu", "big-vbox");
-        this.centerContainer.getStyleClass().add("big-vbox");
         this.levelsListView.setPrefSize(150.0, 300.0);
+        this.centerContainer.getStyleClass().add("big-vbox");
         this.centerContainer.setAlignment(Pos.CENTER);
         this.playButton.setDisable(true);
     }
@@ -106,6 +107,7 @@ public class LevelSelectPane extends BorderPane {
                 LevelManager.getInstance().setLevel(this.levelsListView.getSelectionModel().getSelectedItem());
                 SceneManager.getInstance().showGamePlayScene();
                 LevelManager.getInstance().startLevelTimer();
+
             } catch (InvalidMapException e) {
                 e.printStackTrace();
             }

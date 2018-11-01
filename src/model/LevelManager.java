@@ -97,7 +97,7 @@ public class LevelManager {
         this.t.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                Platform.runLater(() -> LevelManager.getInstance().curGameLevelExistedDuration.setValue(LevelManager.getInstance().curGameLevelExistedDuration.get() + 1));
+                Platform.runLater(() -> curGameLevelExistedDuration.setValue(curGameLevelExistedDuration.get() + 1));
             }
         }, 0L, 1000L);
     }
@@ -133,7 +133,7 @@ public class LevelManager {
         boolean flag = false;
         for (String levelName : this.levelNames) {
             if (flag) return levelName;
-            if (!levelName.equals(this.curLevelNameProperty.toString())) continue;
+            if (!levelName.equals(this.curLevelNameProperty.getValue())) continue;
             flag = true;
         }
         return null;

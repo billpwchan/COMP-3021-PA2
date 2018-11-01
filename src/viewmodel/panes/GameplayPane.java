@@ -47,6 +47,7 @@ public class GameplayPane extends BorderPane {
         this.connectComponents();
         this.styleComponents();
         this.setCallbacks();
+        this.renderCanvas();
     }
 
     /**
@@ -54,7 +55,7 @@ public class GameplayPane extends BorderPane {
      */
     private void connectComponents() {
         this.canvasContainer.getChildren().add(this.gamePlayCanvas);
-        this.buttonBar.getChildren().addAll(this.canvasContainer, this.restartButton, this.quitToMenuButton);
+        this.buttonBar.getChildren().addAll(this.info, this.canvasContainer, this.restartButton, this.quitToMenuButton);
         this.setCenter(this.canvasContainer);
         this.setBottom(this.buttonBar);
         this.canvasContainer.setAlignment(Pos.CENTER);
@@ -64,9 +65,9 @@ public class GameplayPane extends BorderPane {
      * Apply CSS styling to components.
      */
     private void styleComponents() {
-        this.buttonBar.getStyleClass().add("big-hbox");
+        this.canvasContainer.getStyleClass().add("big-hbox");
         this.buttonBar.getChildren().stream().filter(Button.class::isInstance).forEach(node -> node.getStyleClass().add("big-button"));
-        this.canvasContainer.getStyleClass().add("bottom-menu");
+        this.buttonBar.getStyleClass().add("bottom-menu");
     }
 
     /**
@@ -90,26 +91,27 @@ public class GameplayPane extends BorderPane {
                     break;
                 }
                 case A: {
-                    LevelManager.getInstance().getGameLevel().makeMove('A');
+                    LevelManager.getInstance().getGameLevel().makeMove('a');
                     break;
                 }
                 case S: {
-                    LevelManager.getInstance().getGameLevel().makeMove('S');
+                    LevelManager.getInstance().getGameLevel().makeMove('s');
                     break;
                 }
                 case D: {
-                    LevelManager.getInstance().getGameLevel().makeMove('D');
+                    LevelManager.getInstance().getGameLevel().makeMove('d');
                 }
             }
             AudioManager.getInstance().playMoveSound();
             this.renderCanvas();
-            if (LevelManager.getInstance().getGameLevel().isDeadlocked()) {
-                AudioManager.getInstance().playDeadlockSound();
-                this.createDeadlockedPopup();
-            }
             if (LevelManager.getInstance().getGameLevel().isWin()) {
                 AudioManager.getInstance().playWinSound();
                 this.createLevelClearPopup();
+            } else {
+                if (LevelManager.getInstance().getGameLevel().isDeadlocked()) {
+                    AudioManager.getInstance().playDeadlockSound();
+                    this.createDeadlockedPopup();
+                }
             }
         });
     }
@@ -203,6 +205,11 @@ public class GameplayPane extends BorderPane {
         LevelManager.getInstance().resetLevelTimer();
         LevelManager.getInstance().startLevelTimer();
         LevelManager.getInstance().incrementNumRestarts();
+        try {
+            LevelManager.getInstance().setLevel(LevelManager.getInstance().currentLevelNameProperty().get());
+        } catch (InvalidMapException e) {
+            e.printStackTrace();
+        }
         this.renderCanvas();
     }
 
