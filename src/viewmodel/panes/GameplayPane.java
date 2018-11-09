@@ -183,8 +183,7 @@ public class GameplayPane extends BorderPane {
         }
         var response = alert.showAndWait();
         if (response.get() == returnBtn) {
-            SceneManager.getInstance().showMainMenuScene();
-            LevelManager.getInstance().resetNumRestarts();
+            this.doQuitToMenuAction();
         } else if (response.get() == nextLevelBtn) {
             try {
                 LevelManager.getInstance().setLevel(LevelManager.getInstance().getNextLevelName());
