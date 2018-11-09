@@ -191,6 +191,7 @@ public class GameplayPane extends BorderPane {
                 this.renderCanvas();
                 LevelManager.getInstance().resetNumRestarts();
                 LevelManager.getInstance().resetLevelTimer();
+                LevelManager.getInstance().startLevelTimer();
             } catch (InvalidMapException e) {
                 e.printStackTrace();
             }

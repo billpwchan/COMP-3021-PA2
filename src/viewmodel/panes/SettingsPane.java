@@ -57,9 +57,8 @@ public class SettingsPane extends BorderPane {
      * Also set the text area to not be editable, but allow text wrapping.
      */
     private void styleComponents() {
-        this.leftContainer.getStyleClass().add("big-vbox");
+        this.leftContainer.getStyleClass().addAll("big-vbox", "side-menu");
         this.leftContainer.getChildren().stream().filter(Button.class::isInstance).forEach(node -> node.getStyleClass().add("big-button"));
-        this.leftContainer.getStyleClass().add("side-menu");
         this.infoText.setEditable(false);
         this.infoText.setWrapText(true);
         this.setPrefHeight(600.0);
@@ -74,7 +73,7 @@ public class SettingsPane extends BorderPane {
         this.returnButton.setOnAction(actionEvent -> SceneManager.getInstance().showMainMenuScene());
         this.toggleSoundFXButton.setOnAction(actionEvent -> {
             AudioManager.getInstance().setEnabled(!AudioManager.getInstance().isEnabled());
-            this.toggleSoundFXButton.setText(!AudioManager.getInstance().isEnabled() ? "Enabled " + "Sound FX" : "Disabled " + "Sound FX");
+            this.toggleSoundFXButton.setText((!AudioManager.getInstance().isEnabled() ? "Enabled " : "Disabled ") + "Sound FX");
         });
     }
 }
